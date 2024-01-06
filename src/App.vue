@@ -1,6 +1,5 @@
 <template>
   <div class="container">
-    
     <div class="form-area">
       <el-timeline>
         <el-timeline-item v-for="({ timestamp, id, detail }, index) in moduleList" :key="index" placement="top"
@@ -59,13 +58,14 @@
       </el-timeline>
     </div>
 
-    <div class="display-area">
+    <div class="display-area" ref="previewElement">
       <div class="preview">
         <div ref="captureElement" style="position: relative;">
           <div class="resume-header">- PERSONAL RESUME -</div>
 
           <div v-for="(_module, index) in moduleList" :key="index" class="module">
-            <component :is="themeMap[drawerInfo.titleStyle]" :text="_module.timestamp" :themeColor="themeColor"/>
+            <component :is="themeMap[drawerInfo.titleStyle]" :text="_module.timestamp" :themeColor="themeColor"
+              :bgColor="bgColor" />
             <el-row v-if="_module.id === 0">
               <div style="width: 500px;">
                 <el-row v-for="(row, index) in _formFields" :key="index" :gutter="40">
@@ -126,26 +126,34 @@
         <el-form-item label="主题色" label-width="80px">
           <el-color-picker v-model="themeColor" />
         </el-form-item>
+        <el-form-item label="背景色" label-width="80px">
+          <el-color-picker v-model="bgColor" />
+        </el-form-item>
       </el-form>
     </el-drawer>
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, computed } from 'vue';
+import { ref, reactive, computed, watchEffect } from 'vue';
 import html2canvas from 'html2canvas';
 import jspdf from 'jspdf';
 import dayjs from 'dayjs';
-
 
 import DefaultTitle from './components/moduleTitle/DefaultTitle.vue';
 import PlainTitle from './components/moduleTitle/PlainTitle.vue';
 import BlueGrayTitle from './components/moduleTitle/BlueGrayTitle.vue';
 import ImgCropper from './components/ImgCropper.vue';
 
+import { ElMessage } from 'element-plus'
+
 const themeColor = ref('#255ca0b8');
+const bgColor = ref('#eff1f3ad');
 const captureElement = ref(null);
+const previewElement = ref(null);
+const previewBottom = ref(0);
 const curModuleIndex = ref(0);
+
 const formFields = reactive([
   { label: '姓名', value: '林远' },
   { label: '年龄', value: '23' },
@@ -182,17 +190,31 @@ const _formFields = computed(() => {
   return _newList
 })
 
-// const uploadClick = () => {
-//   console.log('uploadClick')
-//   document.getElementById('imageInput').click()
-// }
+watchEffect(() => {
+  if (!previewElement.value) console.log('previewElement is null')
+  else if (previewElement.value && previewBottom.value > window.innerHeight) {
+    console.log(previewBottom.value, window.innerHeight)
+    ElMessage({
+      message: '可能无法完整保存为一页，请调整字号或缩减篇幅',
+      type: 'warning',
+    })
+  }
+})
 
+const updatePreViewBottom = () => {
+  if (previewElement.value) previewBottom.value = previewElement.value.getBoundingClientRect().bottom
+  else {
+    console.log('previewElement is null')
+  }
+}
 // 基础信息增删操作
 const addField = () => {
   formFields.push({ label: '', value: '' });
+  updatePreViewBottom()
 };
 const removeField = (index) => {
   formFields.splice(index, 1);
+  updatePreViewBottom()
 };
 
 // 时间段/文字描述增删操作
@@ -200,28 +222,34 @@ const addSec = (moduleId, type) => {
   let mod = moduleList.find(m => m.id === moduleId)
   if (type === 0) {
     mod.detail = [...mod.detail, { dateRange: [dayjs(), dayjs()], info1: '华中科技大学', info2: '计算机科学与技术', type: 'time' }]
+    updatePreViewBottom()
     return
   }
   mod.detail = [...mod.detail, { desc: '请描述你的经历/技能！', type: 'desc' }];
+  updatePreViewBottom()
 }
 const removeSec = (moduleId, index) => {
   let mod = moduleList.find(m => m.id === moduleId)
   mod.detail.splice(index, 1);
+  updatePreViewBottom()
 }
 
 // 模块增删操作
 const addModule = (index) => {
   dialogInfo.visible = true;
   curModuleIndex.value = index;
+
 }
 const submitModule = () => {
   dialogInfo.visible = false;
   moduleList.splice(curModuleIndex.value + 1, 0, { id: new Date().getTime(), timestamp: dialogInfo.name, detail: [] });
   dialogInfo.name = '';
+  updatePreViewBottom()
 }
 
 const removeModule = (index) => {
   moduleList.splice(index, 1);
+  updatePreViewBottom()
 }
 
 // op 0 表示前移 ，1 表示下移
@@ -237,6 +265,7 @@ const moveModule = (index, op) => {
 
 const capture = () => {
   if (captureElement.value) {
+
     html2canvas(captureElement.value, {
       dpi: 300, // 设置截图的分辨率
       scale: 3,
@@ -255,6 +284,7 @@ const capture = () => {
       pdf.addImage(imgData, 'PNG', 30, 30, imgWidth, imgHeight, '', 'FAST');
       pdf.save('capture.pdf');
     });
+    return
   }
   console.log('captureElement is null')
 };
@@ -359,7 +389,6 @@ const capture = () => {
   top: 30px;
   right: 30px;
 }
-
 </style>
 
 

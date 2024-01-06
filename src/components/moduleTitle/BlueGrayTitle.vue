@@ -7,18 +7,18 @@
     </div>
 </template>
 <script setup>
-const props = defineProps({ text: String })
+const props = defineProps({ text: String, themeColor: String,bgColor: String})
 </script>
 
 <style scoped>
 .pre{
-  background-color: #255ca0b8;
+  background-color: v-bind(themeColor);
   width: 5px;
   height: 35px;
   margin-left: 6px;
 }
 .title {
-  background-color: #eff1f3ad;
+  background-color: v-bind(bgColor);
   margin-bottom: 10px;
   border-radius: 3px;
   display: flex;
@@ -26,7 +26,7 @@ const props = defineProps({ text: String })
 .text {
   font-size: 18px;
   font-weight: bold;
-  color: #255ca0;
+  color: v-bind(themeColor);
   margin: 3px 10px
 }
 </style>
