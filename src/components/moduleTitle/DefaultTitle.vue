@@ -1,17 +1,16 @@
 <template>
-    <div class="title">
+    <div class="title" :style="{ fontSize }">
         {{ props.text }}
     </div>
     <div class="bottom"></div>
 </template>
 <script setup>
-const props = defineProps({ text: String, themeColor: String, bgColor: String })
+const props = defineProps({ text: String, themeColor: String, bgColor: String, fontSize: String  })
 </script>
 
 <style scoped>
 .title {
   padding: 0px 10px;
-  font-size: 18px;
   font-weight: bold;
   color: v-bind(themeColor);
   width: 130px;

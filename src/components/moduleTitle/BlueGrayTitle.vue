@@ -1,13 +1,13 @@
 <template>
     <!-- 蓝色字体 - 灰色长条背景 -->
-    <div class="title">
+    <div class="title" >
       <div class="pre"></div>
       <div class="pre"></div>
-        <div class="text">{{ props.text }}</div>
+        <div class="text" :style="{ fontSize }">{{ props.text }}</div>
     </div>
 </template>
 <script setup>
-const props = defineProps({ text: String, themeColor: String, bgColor: String})
+const props = defineProps({ text: String, themeColor: String, bgColor: String, fontSize: String })
 </script>
 
 <style scoped>
@@ -24,7 +24,6 @@ const props = defineProps({ text: String, themeColor: String, bgColor: String})
   display: flex;
 }
 .text {
-  font-size: 18px;
   font-weight: bold;
   color: v-bind(themeColor);
   margin: 3px 10px
