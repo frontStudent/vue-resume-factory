@@ -8,8 +8,10 @@ const router = useRouter()
 const urlMap = {
   '0': '/home',
   '1': '/workspace',
+  '2': '/guide',
 }
 const handleSelect = (key) => {
+  if(key === '3') window.open('https://github.com/frontStudent/vue-resume-factory')
   router.push(urlMap[key])
 }
 </script>
@@ -28,7 +30,7 @@ const handleSelect = (key) => {
       </el-icon>使用指南</el-menu-item>
     <el-menu-item index="3"><el-icon>
         <Position />
-      </el-icon>github</el-menu-item>
+      </el-icon>GitHub</el-menu-item>
     <!-- <el-sub-menu index="2">
       <template #title>Workspace</template>
       <el-menu-item index="2-1">item one</el-menu-item>

@@ -1,5 +1,5 @@
 <template>
-  <div class="avatar-uploader">
+  <div class="avatar-uploader" :style="imgUrl !== '' ? {border: none} : {}">
     <!-- 若图片只设置宽度，可以保持等比例展示图片 -->
     <el-image v-if="imgUrl !== ''" :src="imgUrl" style="width: 100%;" :preview-src-list="[imgUrl]" />
     <el-icon v-else class="avatar-uploader-icon" @click="dialogVisible = true">
@@ -106,7 +106,8 @@ const handleChange = (
   
 <style scoped>
 .avatar-uploader {
-  width: 90px;
+  width: 100px;
+  height: 150px;
   margin: 0px -20px;
   border: 1px dashed var(--el-border-color);
   border-radius: 6px;
@@ -116,15 +117,11 @@ const handleChange = (
   transition: var(--el-transition-duration-fast);
 }
 
-.avatar-uploader:hover {
-  border-color: var(--el-color-primary);
-}
-
 .el-icon.avatar-uploader-icon {
   font-size: 28px;
   color: #8c939d;
-  width: 90px;
-  height: 90px;
+  width: 100px;
+  height: 150px;
   text-align: center;
 }
 </style>

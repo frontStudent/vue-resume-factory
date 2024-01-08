@@ -6,13 +6,15 @@
           size='large' type='primary' icon='MoreFilled' :timestamp="timestamp">
           <el-form label-width="80px" v-if="id === 0">
             <div v-for="(field, index) in formFields" :key="index" class="field">
-              <el-form-item label="label">
+              <el-form-item label="字段名">
                 <el-input v-model="field.label" placeholder="字段名"></el-input>
               </el-form-item>
-              <el-form-item label="value">
+              <el-form-item label="字段值">
                 <el-input v-model="field.value" placeholder="字段值"></el-input>
               </el-form-item>
-              <el-button @click="removeField(index)" style="margin-left: 20px;">delete</el-button>
+              <el-button @click="removeField(index)" style="margin-left: 20px;"><el-icon>
+                  <Delete />
+                </el-icon></el-button>
             </div>
             <el-form-item>
               <el-button type="primary" @click="addField">添加自定义字段</el-button>
@@ -32,14 +34,14 @@
                   <el-form-item label="信息2">
                     <el-input v-model="field.info2" placeholder="信息2"></el-input>
                   </el-form-item>
-                  <el-button @click="removeSec(id, index)" style="margin-left: 20px;">删除</el-button>
+                  <el-button @click="removeSec(id, index)" style="margin-left: 20px;"><el-icon><Delete /></el-icon></el-button>
                 </div>
                 <div class="desc" v-if="field.type === 'desc'">
                   <el-form-item label="描述">
                     <el-input v-model="field.desc" placeholder="描述" autosize type="textarea" style="width: 280px;">
                     </el-input>
                   </el-form-item>
-                  <el-button @click="removeSec(id, index)" style="margin-left: 20px;">删除</el-button>
+                  <el-button @click="removeSec(id, index)" style="margin-left: 20px;"><el-icon><Delete /></el-icon></el-button>
                 </div>
               </div>
               <el-space style="margin: 20px;">
@@ -51,22 +53,24 @@
           <el-space>
             <el-button @click="addModule(index)">在下方插入模块</el-button>
             <el-button @click="removeModule(index)" :disabled="id === 0">删除当前模块</el-button>
-            <el-button @click="moveModule(index, 0)">up</el-button>
-            <el-button @click="moveModule(index, 1)">down</el-button>
+            <el-button @click="moveModule(index, 0)">上移</el-button>
+            <el-button @click="moveModule(index, 1)">下移</el-button>
           </el-space>
         </el-timeline-item>
       </el-timeline>
     </div>
 
-    <div class="display-area" ref="previewElement" :style="{ fontSize: moduleTextSize + 'px' }">
+    <div class="display-area" ref="previewElement"
+      :style="{ fontSize: drawerInfo.moduleTextSize + 'px', top: previewTop }">
       <div class="preview">
         <div ref="captureElement" style="position: relative;">
-          <div class="resume-header" v-if="templateType === '1'">- PERSONAL RESUME -</div>
+          <div class="resume-header" v-if="drawerInfo.showHeaderText">{{ drawerInfo.headerText }}</div>
           <div v-for="(_module, index) in moduleList" :key="index" class="module">
-            <component :is="themeMap[drawerInfo.titleStyle]" :text="_module.timestamp" :themeColor="themeColor"
-              :bgColor="bgColor" :fontSize="moduleTitleSize + 'px'" v-if="!(_module.id === 0 && templateType === '0')" />
+            <component :is="themeMap[drawerInfo.titleStyle]" :text="_module.timestamp" :themeColor="drawerInfo.themeColor"
+              :bgColor="drawerInfo.bgColor" :fontSize="drawerInfo.moduleTitleSize + 'px'"
+              v-if="!(_module.id === 0 && drawerInfo.templateType === '0')" />
             <div class="base-info-area" v-if="_module.id === 0">
-              <el-row v-if="templateType === '1'">
+              <el-row v-if="drawerInfo.templateType === '1'">
                 <div style="width: 500px;">
                   <el-row v-for="(row, index) in _formFields" :key="index" :gutter="40">
                     <el-col v-for="({ label, value }) in row" :key="label" :span="10">
@@ -76,7 +80,7 @@
                 </div>
                 <ImgCropper />
               </el-row>
-              <div v-if="templateType === '0'">
+              <div v-if="drawerInfo.templateType === '0'">
                 <el-row>
                   <div style="width: 500px;">
                     <h2 :style="{ fontWeight: 750, marginBottom: '5px' }">{{ name }}
@@ -124,37 +128,45 @@
       </template>
     </el-dialog>
 
-    <el-drawer v-model="drawerInfo.visible" title="更多配置">
+    <el-drawer v-model="drawerInfo.visible" title="更多配置" size="400">
       <el-form label-position="top">
-        <el-form-item label="标题" label-width="80px">
+        <el-form-item label="段落标题样式">
           <el-radio-group v-model="drawerInfo.titleStyle">
             <el-radio label="0" size="large">经典</el-radio>
             <el-radio label="1" size="large">极简</el-radio>
-            <el-radio label="2" size="large">灰底</el-radio>
+            <el-radio label="2" size="large">全底</el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item label="颜色">
           <el-form :inline="true">
             <el-form-item label="模块标题文字">
-              <el-color-picker v-model="themeColor" />
+              <el-color-picker v-model="drawerInfo.themeColor" />
             </el-form-item>
             <el-form-item label="模块标题背景">
-              <el-color-picker v-model="bgColor" />
+              <el-color-picker v-model="drawerInfo.bgColor" />
             </el-form-item>
           </el-form>
         </el-form-item>
         <el-form-item label="字体大小">
           <el-form label-position="left" style="width: 400px">
             <el-form-item label="模块标题">
-              <el-slider v-model="moduleTitleSize" :step="0.5" :min="10" :max="20" show-stops />
+              <el-slider v-model="drawerInfo.moduleTitleSize" :step="0.5" :min="10" :max="20" show-stops />
             </el-form-item>
             <el-form-item label="模块内容">
-              <el-slider v-model="moduleTextSize" :step="0.5" :min="10" :max="20" show-stops />
+              <el-slider v-model="drawerInfo.moduleTextSize" :step="0.5" :min="10" :max="20" show-stops />
+            </el-form-item>
+          </el-form>
+        </el-form-item>
+        <el-form-item label="顶部内容">
+          <el-form>
+            <el-checkbox v-model="drawerInfo.showHeaderText" label="是否显示顶部文字" size="large" />
+            <el-form-item label="顶部文字内容">
+              <el-input v-model="drawerInfo.headerText" placeholder="请输入顶部文字内容" style="width: 300px"></el-input>
             </el-form-item>
           </el-form>
         </el-form-item>
         <el-form-item label="基础信息模块样式">
-          <el-radio-group v-model="templateType">
+          <el-radio-group v-model="drawerInfo.templateType">
             <el-radio label="0" size="large">经典</el-radio>
             <el-radio label="1" size="large">与其他模块平级</el-radio>
           </el-radio-group>
@@ -162,7 +174,7 @@
       </el-form>
     </el-drawer>
 
-    <div class="op-but">
+    <div class="op-but" :style="{ top: previewTop }">
       <el-tooltip content="更多配置" placement="left">
         <el-icon size="18" @click="drawerInfo.visible = true">
           <Setting />
@@ -178,7 +190,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, watchEffect } from 'vue';
+import { ref, reactive, computed, watchEffect, onMounted } from 'vue';
 import html2canvas from 'html2canvas';
 import jspdf from 'jspdf';
 import dayjs from 'dayjs';
@@ -190,16 +202,11 @@ import ImgCropper from '../components/ImgCropper.vue';
 import _moduleList from '../constant/staticInfo.js';
 
 import { ElMessage } from 'element-plus'
-import { Setting, Download } from '@element-plus/icons-vue'
+import { Setting, Download, Delete } from '@element-plus/icons-vue'
+
 
 const captureElement = ref(null);
 const previewElement = ref(null);
-
-const themeColor = ref('#FEFFFF');
-const bgColor = ref('#255ca0b8');
-const templateType = ref('0');
-const moduleTitleSize = ref(18);
-const moduleTextSize = ref(15);
 
 const previewBottom = ref(0);
 const curModuleIndex = ref(0);
@@ -221,7 +228,14 @@ const dialogInfo = reactive({
 // 配置drawer信息
 const drawerInfo = reactive({
   visible: false,
-  titleStyle: '0'
+  titleStyle: '0',
+  themeColor: '#FEFFFF',
+  bgColor: '#255ca0b8',
+  templateType: '0',
+  moduleTitleSize: 18,
+  moduleTextSize: 15,
+  headerText: '- PERSONAL RESUME -',
+  showHeaderText: true
 })
 
 let moduleList = reactive(_moduleList);
@@ -232,11 +246,27 @@ const themeMap = {
   2: BlueGrayTitle,
 }
 
+
+const previewTop = ref('80px'); // 预览区域距离顶部的距离
+
+// 监听滚动事件
+const handleScroll = () => {
+  if (window.scrollY >= 55) {
+    previewTop.value = '20px';
+    return
+  }
+  previewTop.value = '80px';
+};
+
+// 在组件挂载时添加滚动事件监听
+onMounted(() => {
+  window.addEventListener('scroll', handleScroll);
+});
 const _formFields = computed(() => {
   const formFieldsWithoutName = formFields.filter(item => item.label !== '姓名')
 
   // 在渲染基础信息表单时，如果是模板类型1，姓名字段会单独加粗放大显示在顶部，无需在表单中显示
-  const curFormFields = templateType.value === '0' ? formFieldsWithoutName : formFields
+  const curFormFields = drawerInfo.templateType.value === '0' ? formFieldsWithoutName : formFields
 
   const rows = curFormFields.length
   // 将formFields转换为二维数组，每个子数组包含2个元素
@@ -363,7 +393,6 @@ const capture = () => {
 .display-area {
   left: 1000px;
   position: fixed;
-  top: 80px;
   width: 35%;
 }
 
@@ -379,15 +408,7 @@ const capture = () => {
 }
 
 .module {
-  margin: 15px 0;
-}
-
-#imageDisplay {
-  position: absolute;
-  right: 80px;
-  top: 40px;
-  width: 100px;
-  height: 100px
+  margin: 10px 0;
 }
 
 .time-sec-view {
@@ -444,14 +465,13 @@ const capture = () => {
 .op-but {
   right: 20px;
   position: fixed;
-  top: 80px;
   padding: 25px 20px;
   height: 100px;
   border-radius: 50px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.282);
-  background-color: #fff;
+  box-shadow: 0 2px 5px rgba(2, 2, 2, 0.389);
+  background-color: #b5c6f392;
 }
 </style>
