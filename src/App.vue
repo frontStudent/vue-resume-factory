@@ -60,22 +60,49 @@
 
     <div class="display-area" ref="previewElement">
       <div class="preview">
+        <div class="op-but">
+          <el-tooltip content="更多配置" placement="top">
+            <el-button><el-icon @click="drawerInfo.visible = true" size="18">
+                <Setting />
+              </el-icon></el-button>
+          </el-tooltip>
+          <el-tooltip content="保存为PDF" placement="top">
+          <el-button><el-icon @click="capture" size="18">
+              <Download />
+            </el-icon></el-button>
+          </el-tooltip>
+        </div>
         <div ref="captureElement" style="position: relative;">
-          <div class="resume-header">- PERSONAL RESUME -</div>
+          <div class="resume-header" v-if="templateType === '0'">- PERSONAL RESUME -</div>
 
           <div v-for="(_module, index) in moduleList" :key="index" class="module">
             <component :is="themeMap[drawerInfo.titleStyle]" :text="_module.timestamp" :themeColor="themeColor"
-              :bgColor="bgColor" />
-            <el-row v-if="_module.id === 0">
-              <div style="width: 500px;">
-                <el-row v-for="(row, index) in _formFields" :key="index" :gutter="40">
-                  <el-col v-for="({ label, value }) in row" :key="label" :span="10">
-                    {{ label }}: {{ value }}
-                  </el-col>
+              :bgColor="bgColor" v-if="!(_module.id === 0 && templateType === '1')" />
+            <div class="base-info-area" v-if="_module.id === 0">
+              <el-row v-if="templateType === '0'">
+                <div style="width: 500px;">
+                  <el-row v-for="(row, index) in _formFields" :key="index" :gutter="40">
+                    <el-col v-for="({ label, value }) in row" :key="label" :span="10">
+                      {{ label }}: {{ value }}
+                    </el-col>
+                  </el-row>
+                </div>
+                <ImgCropper />
+              </el-row>
+              <div v-if="templateType === '1'">
+                <el-row>
+                  <div style="width: 500px;">
+                    <h2 :style="{ fontWeight: 750, marginBottom: '5px' }">{{ name }}</h2>
+                    <el-row v-for="(row, index) in _formFields" :key="index" :gutter="40">
+                      <el-col v-for="({ label, value }) in row" :key="label" :span="10">
+                        {{ label }}: {{ value }}
+                      </el-col>
+                    </el-row>
+                  </div>
+                  <ImgCropper />
                 </el-row>
               </div>
-              <ImgCropper />
-            </el-row>
+            </div>
             <div v-else>
               <div v-for="({ type, dateRange, info1, info2, desc }, index) in _module.detail" :key="index">
                 <div v-if="type === 'time'" class="time-sec-view">
@@ -92,10 +119,6 @@
             </div>
           </div>
         </div>
-      </div>
-      <div class="op-but">
-        <el-button @click="drawerInfo.visible = true">更多配置</el-button>
-        <el-button @click="capture">保存为PDF</el-button>
       </div>
 
     </div>
@@ -115,19 +138,29 @@
     </el-dialog>
 
     <el-drawer v-model="drawerInfo.visible" title="更多配置">
-      <el-form>
+      <el-form label-position="top">
         <el-form-item label="标题" label-width="80px">
-          <el-radio-group v-model="drawerInfo.titleStyle" class="ml-4">
+          <el-radio-group v-model="drawerInfo.titleStyle">
             <el-radio label="0" size="large">经典</el-radio>
             <el-radio label="1" size="large">极简</el-radio>
             <el-radio label="2" size="large">灰底</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item label="主题色" label-width="80px">
-          <el-color-picker v-model="themeColor" />
+        <el-form-item label="颜色">
+          <el-form :inline="true">
+            <el-form-item label="标题文字">
+              <el-color-picker v-model="themeColor" />
+            </el-form-item>
+            <el-form-item label="标题背景">
+              <el-color-picker v-model="bgColor" />
+            </el-form-item>
+          </el-form>
         </el-form-item>
-        <el-form-item label="背景色" label-width="80px">
-          <el-color-picker v-model="bgColor" />
+        <el-form-item label="基础信息模块样式">
+          <el-radio-group v-model="templateType">
+            <el-radio label="0" size="large">经典</el-radio>
+            <el-radio label="1" size="large">单独置于顶部</el-radio>
+          </el-radio-group>
         </el-form-item>
       </el-form>
     </el-drawer>
@@ -146,11 +179,15 @@ import BlueGrayTitle from './components/moduleTitle/BlueGrayTitle.vue';
 import ImgCropper from './components/ImgCropper.vue';
 
 import { ElMessage } from 'element-plus'
+import { Setting, Download } from '@element-plus/icons-vue'
 
-const themeColor = ref('#255ca0b8');
-const bgColor = ref('#eff1f3ad');
 const captureElement = ref(null);
 const previewElement = ref(null);
+
+const themeColor = ref('#FEFFFF');
+const bgColor = ref('#255ca0b8');
+const templateType = ref('0');
+
 const previewBottom = ref(0);
 const curModuleIndex = ref(0);
 
@@ -183,11 +220,21 @@ const themeMap = {
   1: PlainTitle,
   2: BlueGrayTitle,
 }
+
 const _formFields = computed(() => {
-  const rows = formFields.length
+  const formFieldsWithoutName = formFields.filter(item => item.label !== '姓名')
+
+  // 在渲染基础信息表单时，如果是模板类型1，姓名字段会单独加粗放大显示在顶部，无需在表单中显示
+  const curFormFields = templateType.value === '1' ? formFieldsWithoutName : formFields
+
+  const rows = curFormFields.length
   // 将formFields转换为二维数组，每个子数组包含2个元素
-  const _newList = Array.from({ length: rows }, (_, i) => formFields.slice(i * (2), (i + 1) * (2)))
+  const _newList = Array.from({ length: rows }, (_, i) => curFormFields.slice(i * (2), (i + 1) * (2)))
   return _newList
+})
+
+const name = computed(() => {
+  return formFields.find(item => item.label === '姓名')?.value || '你的姓名'
 })
 
 watchEffect(() => {
@@ -238,8 +285,8 @@ const removeSec = (moduleId, index) => {
 const addModule = (index) => {
   dialogInfo.visible = true;
   curModuleIndex.value = index;
-
 }
+
 const submitModule = () => {
   dialogInfo.visible = false;
   moduleList.splice(curModuleIndex.value + 1, 0, { id: new Date().getTime(), timestamp: dialogInfo.name, detail: [] });
@@ -265,7 +312,6 @@ const moveModule = (index, op) => {
 
 const capture = () => {
   if (captureElement.value) {
-
     html2canvas(captureElement.value, {
       dpi: 300, // 设置截图的分辨率
       scale: 3,
@@ -291,13 +337,15 @@ const capture = () => {
 </script>
 
 <style>
-.form-area {
-  width: 50%;
+.container {
+  display: flex;
+  width: 1500px;
+  margin-top: 50px;
 }
 
-.field {
-  display: flex;
-  margin: 3px 0;
+.form-area {
+  width: 50%;
+  margin-left: 150px;
 }
 
 .display-area {
@@ -307,10 +355,9 @@ const capture = () => {
   width: 35%;
 }
 
-.container {
+.field {
   display: flex;
-  width: 1500px;
-  margin-top: 50px;
+  margin: 3px 0;
 }
 
 .resume-header {
@@ -346,8 +393,6 @@ const capture = () => {
   border-radius: 5px;
   margin-bottom: 20px;
   border: 1px solid #eee;
-
-
 }
 
 .time-sec {
@@ -385,9 +430,8 @@ const capture = () => {
 }
 
 .op-but {
-  position: fixed;
-  top: 30px;
-  right: 30px;
+  display: flex;
+  justify-content: flex-end;
 }
 </style>
 

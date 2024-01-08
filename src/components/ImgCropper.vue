@@ -53,11 +53,11 @@ let option = reactive({
   info: true, // 裁剪框的大小信息
   canScale: false, // 图片是否允许滚轮缩放
   autoCrop: true, // 是否默认生成截图框
-  autoCropWidth: 180, // 默认生成截图框宽度
-  autoCropHeight: 300, // 默认生成截图框高度
+  autoCropWidth: 300, // 默认生成截图框宽度
+  autoCropHeight: 450, // 默认生成截图框高度
   fixedBox: false, // 固定截图框大小 不允许改变
   fixed: true, // 是否开启截图框宽高固定比例，这个如果设置为true，截图框会是固定比例缩放的，如果设置为false，则截图框的狂宽高比例就不固定了
-  fixedNumber: [1, 1.3], // 截图框的宽高比例 [ 宽度 , 高度 ]
+  fixedNumber: [1, 1.5], // 截图框的宽高比例 [ 宽度 , 高度 ]
   canMove: true, // 上传图片是否可以移动
   canMoveBox: true, // 截图框能否拖动
   original: false, // 上传图片按照原始比例渲染

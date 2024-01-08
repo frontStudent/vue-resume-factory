@@ -7,7 +7,7 @@
     </div>
 </template>
 <script setup>
-const props = defineProps({ text: String, themeColor: String,bgColor: String})
+const props = defineProps({ text: String, themeColor: String, bgColor: String})
 </script>
 
 <style scoped>

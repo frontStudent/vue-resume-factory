@@ -5,7 +5,7 @@
     <div class="bottom"></div>
 </template>
 <script setup>
-const props = defineProps({ text: String, themeColor: String })
+const props = defineProps({ text: String, themeColor: String, bgColor: String })
 </script>
 
 <style scoped>
@@ -13,10 +13,10 @@ const props = defineProps({ text: String, themeColor: String })
   padding: 0px 10px;
   font-size: 18px;
   font-weight: bold;
-  color: #f3efef;
+  color: v-bind(themeColor);
   width: 130px;
   height: 0;
-  border-bottom: 30px solid v-bind(themeColor); /* 调整这个值来控制直角梯形的高度 */
+  border-bottom: 30px solid v-bind(bgColor); /* 调整这个值来控制直角梯形的高度 */
   border-right: 30px solid transparent; /* 调整这个值来控制直角梯形的左边宽度 */
 }
  
@@ -24,6 +24,6 @@ const props = defineProps({ text: String, themeColor: String })
     height: 2px;
     margin-top: -1px;
     margin-bottom: 10px;
-    background-color: v-bind(themeColor);
+    background-color: v-bind(bgColor);
 }
 </style>
