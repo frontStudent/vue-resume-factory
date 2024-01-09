@@ -481,5 +481,5 @@ const capture = () => {
   flex-direction: column;
   justify-content: space-between;
   box-shadow: 0 2px 5px rgba(2, 2, 2, 0.389);
-  background-color: #b5c6f392;
+  background-color: #b5c6f367;
 }</style>
