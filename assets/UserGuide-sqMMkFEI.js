@@ -1,0 +1,1 @@
+import{a as o,o as t,c as a,p as d,d as _,b as s}from"./index-JaNFBiUz.js";const n={},e=c=>(d("data-v-c056c4fc"),c=c(),_(),c),r={class:"container"},i=e(()=>s("div",{class:"T1"},"用户使用指南",-1)),p=e(()=>s("div",{class:"T2"},"嗯...有空一定补",-1)),f=[i,p];function h(c,l){return t(),a("div",r,f)}const v=o(n,[["render",h],["__scopeId","data-v-c056c4fc"]]);export{v as default};
