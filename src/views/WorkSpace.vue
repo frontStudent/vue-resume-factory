@@ -34,14 +34,18 @@
                   <el-form-item label="信息2">
                     <el-input v-model="field.info2" placeholder="信息2"></el-input>
                   </el-form-item>
-                  <el-button @click="removeSec(id, index)" style="margin-left: 20px;"><el-icon><Delete /></el-icon></el-button>
+                  <el-button @click="removeSec(id, index)" style="margin-left: 20px;"><el-icon>
+                      <Delete />
+                    </el-icon></el-button>
                 </div>
                 <div class="desc" v-if="field.type === 'desc'">
                   <el-form-item label="描述">
                     <el-input v-model="field.desc" placeholder="描述" autosize type="textarea" style="width: 280px;">
                     </el-input>
                   </el-form-item>
-                  <el-button @click="removeSec(id, index)" style="margin-left: 20px;"><el-icon><Delete /></el-icon></el-button>
+                  <el-button @click="removeSec(id, index)" style="margin-left: 20px;"><el-icon>
+                      <Delete />
+                    </el-icon></el-button>
                 </div>
               </div>
               <el-space style="margin: 20px;">
@@ -53,8 +57,13 @@
           <el-space>
             <el-button @click="addModule(index)">在下方插入模块</el-button>
             <el-button @click="removeModule(index)" :disabled="id === 0">删除当前模块</el-button>
-            <el-button @click="moveModule(index, 0)">上移</el-button>
-            <el-button @click="moveModule(index, 1)">下移</el-button>
+            <el-button @click="removeModule(index)">修改当前模块名</el-button>
+            <el-button @click="moveModule(index, 0)"><el-icon>
+                <Top />
+              </el-icon></el-button>
+            <el-button @click="moveModule(index, 1)"><el-icon>
+                <Bottom />
+              </el-icon></el-button>
           </el-space>
         </el-timeline-item>
       </el-timeline>
@@ -202,7 +211,7 @@ import ImgCropper from '../components/ImgCropper.vue';
 import _moduleList from '../constant/staticInfo.js';
 
 import { ElMessage } from 'element-plus'
-import { Setting, Download, Delete } from '@element-plus/icons-vue'
+import { Setting, Download, Delete, Top, Bottom } from '@element-plus/icons-vue'
 
 
 const captureElement = ref(null);
@@ -473,5 +482,4 @@ const capture = () => {
   justify-content: space-between;
   box-shadow: 0 2px 5px rgba(2, 2, 2, 0.389);
   background-color: #b5c6f392;
-}
-</style>
+}</style>
