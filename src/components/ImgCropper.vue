@@ -1,5 +1,5 @@
 <template>
-  <div class="avatar-uploader" :style="imgUrl !== '' ? {border: none} : {}">
+  <div class="avatar-uploader" :style="imgUrl !== '' ? { border: none } : {}" v-resize>
     <!-- 若图片只设置宽度，可以保持等比例展示图片 -->
     <el-image v-if="imgUrl !== ''" :src="imgUrl" style="width: 100%;" :preview-src-list="[imgUrl]" />
     <el-icon v-else class="avatar-uploader-icon" @click="dialogVisible = true">
@@ -41,6 +41,8 @@ import 'vue-cropper/dist/index.css'
 import { VueCropper } from "vue-cropper";
 import { ref, reactive } from 'vue';
 import { Plus } from '@element-plus/icons-vue'
+
+import { vResize } from '../directives/VResize'
 
 const dialogVisible = ref(false)
 const imgUrl = ref('')
