@@ -1,5 +1,6 @@
 <template>
-  <div class="avatar-uploader" :style="imgUrl !== '' ? { border: none } : {}" v-resize>
+  <div class="avatar-uploader" :style="imgUrl !== '' ? { border: none } : {}"
+    v-resize="{ maxWidth: '100px', maxHeight: '150px' }">
     <!-- 若图片只设置宽度，可以保持等比例展示图片 -->
     <el-image v-if="imgUrl !== ''" :src="imgUrl" style="width: 100%;" :preview-src-list="[imgUrl]" />
     <el-icon v-else class="avatar-uploader-icon" @click="dialogVisible = true">

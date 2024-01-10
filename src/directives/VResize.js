@@ -1,8 +1,8 @@
 export const vResize = {
-  mounted: (el) => {
+  mounted: (el, binding) => {
     let startX, startY, startWidth, startHeight 
-    el.style.maxWidth = '200px'
-    el.style.maxHeight = '300px'
+    el.style.maxWidth = binding.value?.maxWidth || '200px'
+    el.style.maxHeight = binding.value?.maxHeight || '300px'
     
     const onMouseDown = (e) => {
       startX = e.clientX
