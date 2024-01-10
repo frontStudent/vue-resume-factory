@@ -57,7 +57,6 @@
           <el-space>
             <el-button @click="addModule(index)">在下方插入模块</el-button>
             <el-button @click="removeModule(index)" :disabled="id === 0">删除当前模块</el-button>
-            <el-button @click="removeModule(index)">修改当前模块名</el-button>
             <el-button @click="moveModule(index, 0)"><el-icon>
                 <Top />
               </el-icon></el-button>
