@@ -86,7 +86,7 @@
                     </el-col>
                   </el-row>
                 </div>
-                <ImgCropper />
+                <ImgCropper :showUploader="showUploader" />
               </el-row>
               <div v-if="drawerInfo.templateType === '0'">
                 <el-row>
@@ -99,7 +99,7 @@
                       </el-col>
                     </el-row>
                   </div>
-                  <ImgCropper />
+                  <ImgCropper :showUploader="showUploader" />
                 </el-row>
               </div>
             </div>
@@ -182,7 +182,7 @@
       </el-form>
     </el-drawer>
 
-    <div class="op-but" :style="{ top: previewTop }">
+    <div class="op-but" :style="{ top: previewTop }" v-resize>
       <el-tooltip content="更多配置" placement="left">
         <el-icon size="18" @click="drawerInfo.visible = true">
           <Setting />
@@ -191,6 +191,11 @@
       <el-tooltip content="保存为PDF" placement="left">
         <el-icon size="18" @click="capture">
           <Download />
+        </el-icon>
+      </el-tooltip>
+      <el-tooltip content="上传头像照片" placement="left">
+        <el-icon size="18" @click="handleShowUploader">
+          <Picture />
         </el-icon>
       </el-tooltip>
     </div>
@@ -209,8 +214,10 @@ import BlueGrayTitle from '../components/moduleTitle/BlueGrayTitle.vue';
 import ImgCropper from '../components/ImgCropper.vue';
 import _moduleList from '../constant/staticInfo.js';
 
+import { vResize } from '../directives/VResize'
+
 import { ElMessage } from 'element-plus'
-import { Setting, Download, Delete, Top, Bottom } from '@element-plus/icons-vue'
+import { Setting, Download, Delete, Top, Bottom, Picture } from '@element-plus/icons-vue'
 
 
 const captureElement = ref(null);
@@ -218,6 +225,8 @@ const previewElement = ref(null);
 
 const previewBottom = ref(0);
 const curModuleIndex = ref(0);
+
+const showUploader = ref(false);
 
 const formFields = reactive([
   { label: '姓名', value: '林远' },
@@ -254,9 +263,15 @@ const themeMap = {
   2: BlueGrayTitle,
 }
 
+watchEffect(()=>{
+  console.log(showUploader.value,'show')
+})
 
 const previewTop = ref('80px'); // 预览区域距离顶部的距离
-
+const handleShowUploader = () => {
+  console.log(1111111111)
+  showUploader.value = true;
+}
 // 监听滚动事件
 const handleScroll = () => {
   if (window.scrollY >= 55) {
@@ -389,7 +404,7 @@ const capture = () => {
 <style>
 .container {
   display: flex;
-  width: 1500px;
+  width: 100%;
   margin-top: 50px;
 }
 
@@ -399,7 +414,7 @@ const capture = () => {
 }
 
 .display-area {
-  left: 1000px;
+  left: 50%;
   position: fixed;
   width: 35%;
 }
@@ -474,11 +489,13 @@ const capture = () => {
   right: 20px;
   position: fixed;
   padding: 25px 20px;
-  height: 100px;
+  height: 180px;
   border-radius: 50px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  align-items: center;
   box-shadow: 0 2px 5px rgba(2, 2, 2, 0.389);
   background-color: #b5c6f367;
-}</style>
+}
+</style>

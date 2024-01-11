@@ -1,12 +1,10 @@
 <template>
-  <div class="avatar-uploader" :style="imgUrl !== '' ? { border: none } : {}"
-    v-resize="{ maxWidth: '100px', maxHeight: '150px' }">
     <!-- 若图片只设置宽度，可以保持等比例展示图片 -->
-    <el-image v-if="imgUrl !== ''" :src="imgUrl" style="width: 100%;" :preview-src-list="[imgUrl]" />
+    <el-image v-if="imgUrl !== ''" :src="imgUrl" v-resize class="avatar-uploader"/>
+    <!-- <el-image v-if="imgUrl !== ''" :src="imgUrl" style="width: 100%;" :preview-src-list="[imgUrl]" /> -->
     <el-icon v-else class="avatar-uploader-icon" @click="dialogVisible = true">
       <Plus />
     </el-icon>
-  </div>
   <el-dialog v-model="dialogVisible" draggable title="裁剪头像" align-center>
     <div style="width: 600px; height: 400px;">
       <vueCropper style="width: 100%; height: 100%;" ref="cropper" :img="option.img" :outputSize="option.outputSize"
@@ -40,12 +38,18 @@
 <script setup>
 import 'vue-cropper/dist/index.css'
 import { VueCropper } from "vue-cropper";
-import { ref, reactive } from 'vue';
+import { ref, reactive, watchEffect } from 'vue';
 import { Plus } from '@element-plus/icons-vue'
 
 import { vResize } from '../directives/VResize'
+const props = defineProps({ showUploader: Boolean })
 
 const dialogVisible = ref(false)
+
+watchEffect(() => {
+  dialogVisible.value = props.showUploader
+})
+
 const imgUrl = ref('')
 
 const fileList = ref([])
@@ -109,23 +113,27 @@ const handleChange = (
   
 <style scoped>
 .avatar-uploader {
-  width: 100px;
-  height: 150px;
-  margin: 0px -20px;
-  border: 1px dashed var(--el-border-color);
+  width: 80px;
+  height: 120px;
   border-radius: 6px;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-  transition: var(--el-transition-duration-fast);
+  position: absolute;
+  transform: translate(-50%, -50%);
+  left: 90%;
+  top: 55%
 }
 
 .el-icon.avatar-uploader-icon {
+  width: 80px;
+  height: 120px;
+  border: 1px dashed var(--el-border-color);
+  border-radius: 6px;
   font-size: 28px;
+  cursor: pointer;
   color: #8c939d;
-  width: 100px;
-  height: 150px;
+  position: absolute;
   text-align: center;
+  right: 5%;
+  top: 5%
 }
 </style>
   
