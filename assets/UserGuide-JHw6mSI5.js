@@ -1,0 +1,1 @@
+import{a as o,o as t,c as a,p as d,d as _,b as s}from"./index-7ivtIuhn.js";const n={},c=e=>(d("data-v-69acb1ee"),e=e(),_(),e),r={class:"container"},i=c(()=>s("div",{class:"T1"},"用户使用指南",-1)),p=c(()=>s("div",{class:"T2"},"嗯...有空一定补",-1)),h=[i,p];function l(e,f){return t(),a("div",r,h)}const v=o(n,[["render",l],["__scopeId","data-v-69acb1ee"]]);export{v as default};
