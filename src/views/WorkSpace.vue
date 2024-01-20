@@ -57,6 +57,7 @@
           <el-space>
             <el-button @click="addModule(index)">在下方插入模块</el-button>
             <el-button @click="removeModule(index)" :disabled="id === 0">删除当前模块</el-button>
+            <el-button @click="editModule(index)">修改当前模块名</el-button>
             <el-button @click="moveModule(index, 0)"><el-icon>
                 <Top />
               </el-icon></el-button>
@@ -122,8 +123,8 @@
       </div>
     </div>
 
-    <el-dialog v-model="dialogInfo.visible" title="新增模块">
-      <el-form-item label="模块名称" label-width="80px">
+    <el-dialog v-model="dialogInfo.visible" :title="dialogInfo.op === 'add' ? '新增模块' : '修改模块'">
+      <el-form-item label="模块名称" label-width="80px" :rules="[{ required: true }]">
         <el-input v-model="dialogInfo.name" autocomplete="off" placeholder="请输入模块名称" />
       </el-form-item>
       <template #footer>
@@ -182,7 +183,7 @@
       </el-form>
     </el-drawer>
 
-    <div class="op-but" :style="{ top: previewTop }" v-resize>
+    <div class="op-but" :style="{ top: previewTop }">
       <el-tooltip content="更多配置" placement="left">
         <el-icon size="18" @click="drawerInfo.visible = true">
           <Setting />
@@ -198,7 +199,12 @@
           <Picture />
         </el-icon>
       </el-tooltip>
+      <el-tooltip content="创建文本框" placement="left">
+        <el-icon size="18" @click="handleCreateMagicBox"><FullScreen /></el-icon>
+      </el-tooltip>
     </div>
+
+    <MagicBox v-for="index in magicBoxNum" :key="index" value="111" :style="{ backgroundColor: '#f9f7f786' }"></MagicBox>
   </div>
 </template>
 
@@ -214,11 +220,10 @@ import BlueGrayTitle from '../components/moduleTitle/BlueGrayTitle.vue';
 import ImgCropper from '../components/ImgCropper.vue';
 import _moduleList from '../constant/staticInfo.js';
 
-import { vResize } from '../directives/VResize'
+// import { vResize } from '../directives/VResize'
 
 import { ElMessage } from 'element-plus'
-import { Setting, Download, Delete, Top, Bottom, Picture } from '@element-plus/icons-vue'
-
+import { Setting, Download, Delete, Top, Bottom, Picture, FullScreen } from '@element-plus/icons-vue'
 
 const captureElement = ref(null);
 const previewElement = ref(null);
@@ -228,6 +233,8 @@ const curModuleIndex = ref(0);
 
 const showUploader = ref(false);
 
+const magicBoxNum = ref(0);
+
 const formFields = reactive([
   { label: '姓名', value: '林远' },
   { label: '年龄', value: '23' },
@@ -236,9 +243,10 @@ const formFields = reactive([
   { label: '工作经验', value: '2年' }
 ]);
 
-// 新增模块弹窗信息
+// 新增/修改模块弹窗信息
 const dialogInfo = reactive({
   visible: false,
+  op: 'add',
   name: '',
 })
 
@@ -263,13 +271,16 @@ const themeMap = {
   2: BlueGrayTitle,
 }
 
-watchEffect(()=>{
-  console.log(showUploader.value,'show')
+watchEffect(() => {
+  console.log(showUploader.value, 'show')
 })
 
 const previewTop = ref('80px'); // 预览区域距离顶部的距离
+
+const handleCreateMagicBox = () => {
+  magicBoxNum.value++;
+}
 const handleShowUploader = () => {
-  console.log(1111111111)
   showUploader.value = true;
 }
 // 监听滚动事件
@@ -348,13 +359,19 @@ const removeSec = (moduleId, index) => {
 
 // 模块增删操作
 const addModule = (index) => {
+  dialogInfo.op = 'add';
   dialogInfo.visible = true;
   curModuleIndex.value = index;
 }
 
 const submitModule = () => {
   dialogInfo.visible = false;
-  moduleList.splice(curModuleIndex.value + 1, 0, { id: new Date().getTime(), timestamp: dialogInfo.name, detail: [] });
+  if (dialogInfo.op === 'add') {
+    moduleList.splice(curModuleIndex.value + 1, 0, { id: new Date().getTime(), timestamp: dialogInfo.name, detail: [] });
+  }
+  else {
+    moduleList[curModuleIndex.value].timestamp = dialogInfo.name;
+  }
   dialogInfo.name = '';
   updatePreViewBottom()
 }
@@ -362,6 +379,12 @@ const submitModule = () => {
 const removeModule = (index) => {
   moduleList.splice(index, 1);
   updatePreViewBottom()
+}
+
+const editModule = (index) => {
+  dialogInfo.op = 'edit';
+  dialogInfo.visible = true;
+  curModuleIndex.value = index;
 }
 
 // op 0 表示前移 ，1 表示下移
