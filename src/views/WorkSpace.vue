@@ -213,6 +213,7 @@ import dayjs from 'dayjs';
 import DefaultTitle from '../components/moduleTitle/DefaultTitle.vue';
 import PlainTitle from '../components/moduleTitle/PlainTitle.vue';
 import BlueGrayTitle from '../components/moduleTitle/BlueGrayTitle.vue';
+import RecTitle from '../components/moduleTitle/RecTitle.vue';
 import ImgCropper from '../components/ImgCropper.vue';
 import _moduleList from '../constant/staticInfo.js';
 import { moduleTitleImgs } from '../constant/imgUrls'
@@ -264,6 +265,7 @@ const themeMap = {
   0: DefaultTitle,
   1: PlainTitle,
   2: BlueGrayTitle,
+  3: RecTitle
 }
 
 const previewTop = ref('80px'); // 预览区域距离顶部的距离
