@@ -3,18 +3,24 @@
     <div class="title" >
       <div class="pre"></div>
       <div class="pre"></div>
-        <div class="text" :style="{ fontSize }">{{ props.text }}</div>
+        <div class="text" :style="{ fontSize: fontSize + 'px' }">{{ props.text }}</div>
     </div>
 </template>
 <script setup>
-const props = defineProps({ text: String, themeColor: String, bgColor: String, fontSize: String })
+import { ref, watchEffect } from 'vue'
+const props = defineProps({ text: String, themeColor: String, bgColor: String, fontSize: Number })
+const heightParam = ref(props.fontSize * 1.1 + 13 + "px")
+
+watchEffect(() => {
+  heightParam.value = props.fontSize * 1.1 + 13 + "px"
+})
 </script>
 
 <style scoped>
 .pre{
   background-color: v-bind(themeColor);
   width: 5px;
-  height: 35px;
+  height: v-bind(heightParam);
   margin-left: 6px;
 }
 .title {
@@ -26,6 +32,6 @@ const props = defineProps({ text: String, themeColor: String, bgColor: String, f
 .text {
   font-weight: bold;
   color: v-bind(themeColor);
-  margin: 3px 10px
+  margin: 1px 8px
 }
 </style>

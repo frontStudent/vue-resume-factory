@@ -1,0 +1,16 @@
+.setting-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin: 10px 0px;
+}
+
+.module-title-image{
+    border: 1px dashed #ccc;
+    margin: 5px;
+    border-radius: 3px;
+    width: 85%;
+}
+
+.module-title-image :hover{
+    border: 1px dashed #498dd19d;
+}

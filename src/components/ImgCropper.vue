@@ -117,9 +117,9 @@ const handleChange = (
   height: 120px;
   border-radius: 6px;
   position: absolute;
-  transform: translate(-50%, -50%);
-  left: 90%;
-  top: 55%
+  /* transform: translate(-50%, -50%); */
+  left: 85%;
+  /* top: 55% */
 }
 
 .el-icon.avatar-uploader-icon {

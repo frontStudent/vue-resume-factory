@@ -1,0 +1,49 @@
+.resume-header {
+  font-weight: 800;
+  font-size: 20px;
+  text-align: center;
+}
+
+.module {
+  margin: 10px 0;
+}
+
+.time-sec-view {
+  display: flex;
+  justify-content: space-between;
+  margin: 10px 0;
+}
+
+.time-sec-view > div {
+  font-weight: 600;
+}
+
+.preview {
+  padding: 20px 40px;
+  border-radius: 5px;
+  margin-bottom: 20px;
+  border: 1px solid #eee;
+}
+
+.time-sec {
+  background-color: #eaf0f5;
+  margin-top: 10px;
+  padding: 15px;
+  width: 500px;
+  border-radius: 15px;
+  border: 1px dashed #ced7dd;
+}
+
+.desc {
+  display: flex;
+  background-color: #eaf0f5;
+  margin-top: 10px;
+  padding: 15px;
+  width: 500px;
+  border-radius: 15px;
+  border: 1px dashed #ced7dd;
+}
+
+.desc-view {
+  margin: 3px 0;
+}

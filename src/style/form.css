@@ -1,0 +1,10 @@
+.display-area {
+  left: 50%;
+  position: fixed;
+  width: 35%;
+}
+
+.field {
+  display: flex;
+  margin: 3px 0;
+}

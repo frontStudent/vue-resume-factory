@@ -69,14 +69,15 @@
       </el-timeline>
     </div>
 
-    <div class="display-area" ref="previewElement"
+    <div class="display-area" ref="previewElement" id="previewElement"
       :style="{ fontSize: drawerInfo.moduleTextSize + 'px', top: previewTop }">
       <div class="preview">
         <div ref="captureElement" style="position: relative;">
+          <MagicBox v-for="index in magicBoxNum" :key="index" value="111"></MagicBox>
           <div class="resume-header" v-if="drawerInfo.showHeaderText">{{ drawerInfo.headerText }}</div>
           <div v-for="(_module, index) in moduleList" :key="index" class="module">
             <component :is="themeMap[drawerInfo.titleStyle]" :text="_module.timestamp" :themeColor="drawerInfo.themeColor"
-              :bgColor="drawerInfo.bgColor" :fontSize="drawerInfo.moduleTitleSize + 'px'"
+              :bgColor="drawerInfo.bgColor" :fontSize="drawerInfo.moduleTitleSize"
               v-if="!(_module.id === 0 && drawerInfo.templateType === '0')" />
             <div class="base-info-area" v-if="_module.id === 0">
               <el-row v-if="drawerInfo.templateType === '1'">
@@ -89,11 +90,13 @@
                 </div>
                 <ImgCropper :showUploader="showUploader" />
               </el-row>
-              <div v-if="drawerInfo.templateType === '0'">
+              <div v-if="drawerInfo.templateType === '0'" style="marginBottom: '30px';">
                 <el-row>
                   <div style="width: 500px;">
-                    <h2 :style="{ fontWeight: 750, marginBottom: '5px' }">{{ name }}
-                    </h2>
+                    <div
+                      :style="{ fontWeight: 750, marginBottom: '5px', fontSize: drawerInfo.moduleTitleSize + 5 + 'px' }">
+                      {{ name }}
+                    </div>
                     <el-row v-for="(row, index) in _formFields" :key="index" :gutter="40">
                       <el-col v-for="({ label, value }) in row" :key="label" :span="10">
                         {{ label }}: {{ value }}
@@ -113,7 +116,6 @@
                   <div>{{ info2 }}</div>
                 </div>
                 <div v-if="type === 'desc'" class="desc-view">
-                  <!-- <span class="bullet"></span> -->
                   {{ desc }}
                 </div>
               </div>
@@ -137,49 +139,43 @@
       </template>
     </el-dialog>
 
-    <el-drawer v-model="drawerInfo.visible" title="更多配置" size="400">
+    <el-drawer v-model="drawerInfo.visible" title="更多配置" size="450">
       <el-form label-position="top">
-        <el-form-item label="段落标题样式">
-          <el-radio-group v-model="drawerInfo.titleStyle">
-            <el-radio label="0" size="large">经典</el-radio>
-            <el-radio label="1" size="large">极简</el-radio>
-            <el-radio label="2" size="large">全底</el-radio>
-          </el-radio-group>
-        </el-form-item>
-        <el-form-item label="颜色">
-          <el-form :inline="true">
-            <el-form-item label="模块标题文字">
-              <el-color-picker v-model="drawerInfo.themeColor" />
-            </el-form-item>
-            <el-form-item label="模块标题背景">
-              <el-color-picker v-model="drawerInfo.bgColor" />
-            </el-form-item>
-          </el-form>
-        </el-form-item>
-        <el-form-item label="字体大小">
-          <el-form label-position="left" style="width: 400px">
-            <el-form-item label="模块标题">
-              <el-slider v-model="drawerInfo.moduleTitleSize" :step="0.5" :min="10" :max="20" show-stops />
-            </el-form-item>
-            <el-form-item label="模块内容">
-              <el-slider v-model="drawerInfo.moduleTextSize" :step="0.5" :min="10" :max="20" show-stops />
-            </el-form-item>
-          </el-form>
-        </el-form-item>
-        <el-form-item label="顶部内容">
-          <el-form>
-            <el-checkbox v-model="drawerInfo.showHeaderText" label="是否显示顶部文字" size="large" />
-            <el-form-item label="顶部文字内容">
-              <el-input v-model="drawerInfo.headerText" placeholder="请输入顶部文字内容" style="width: 300px"></el-input>
-            </el-form-item>
-          </el-form>
-        </el-form-item>
-        <el-form-item label="基础信息模块样式">
-          <el-radio-group v-model="drawerInfo.templateType">
-            <el-radio label="0" size="large">经典</el-radio>
-            <el-radio label="1" size="large">与其他模块平级</el-radio>
-          </el-radio-group>
-        </el-form-item>
+        <div class="setting-title">标题样式</div>
+        <el-form :inline="true">
+          <el-form-item label="文字颜色">
+            <el-color-picker v-model="drawerInfo.themeColor" />
+          </el-form-item>
+          <el-form-item label="背景颜色">
+            <el-color-picker v-model="drawerInfo.bgColor" />
+          </el-form-item>
+        </el-form>
+        <el-descriptions :column="2">
+          <el-descriptions-item v-for="(img, index) in moduleTitleImgs" :key="index"><el-image :src="img.src"
+              class="module-title-image" lazy @click="drawerInfo.titleStyle = img.value" /></el-descriptions-item>
+        </el-descriptions>
+
+        <div class="setting-title">字体大小</div>
+        <el-form label-position="left" style="width: 400px">
+          <el-form-item label="模块标题">
+            <el-slider v-model="drawerInfo.moduleTitleSize" :step="0.5" :min="16.5" :max="19.5" show-stops />
+          </el-form-item>
+          <el-form-item label="模块内容">
+            <el-slider v-model="drawerInfo.moduleTextSize" :step="0.5" :min="12" :max="16" show-stops />
+          </el-form-item>
+        </el-form>
+        <div class="setting-title">基础信息排版</div>
+        <el-radio-group v-model="drawerInfo.templateType">
+          <el-radio label="0" size="large">经典</el-radio>
+          <el-radio label="1" size="large">与其他模块平级</el-radio>
+        </el-radio-group>
+        <div class="setting-title">顶部区域</div>
+        <el-form>
+          <el-checkbox v-model="drawerInfo.showHeaderText" label="是否需要顶部区域" size="large" />
+          <el-form-item label="顶部文字内容">
+            <el-input v-model="drawerInfo.headerText" placeholder="请输入顶部文字内容" style="width: 300px"></el-input>
+          </el-form-item>
+        </el-form>
       </el-form>
     </el-drawer>
 
@@ -199,17 +195,17 @@
           <Picture />
         </el-icon>
       </el-tooltip>
-      <el-tooltip content="创建文本框" placement="left">
+      <!-- <el-tooltip content="创建文本框" placement="left">
         <el-icon size="18" @click="handleCreateMagicBox"><FullScreen /></el-icon>
-      </el-tooltip>
+      </el-tooltip> -->
     </div>
-
-    <MagicBox v-for="index in magicBoxNum" :key="index" value="111" :style="{ backgroundColor: '#f9f7f786' }"></MagicBox>
   </div>
 </template>
 
 <script setup>
 import { ref, reactive, computed, watchEffect, onMounted } from 'vue';
+import { ElMessage } from 'element-plus'
+import { Setting, Download, Delete, Top, Bottom, Picture } from '@element-plus/icons-vue'
 import html2canvas from 'html2canvas';
 import jspdf from 'jspdf';
 import dayjs from 'dayjs';
@@ -219,11 +215,10 @@ import PlainTitle from '../components/moduleTitle/PlainTitle.vue';
 import BlueGrayTitle from '../components/moduleTitle/BlueGrayTitle.vue';
 import ImgCropper from '../components/ImgCropper.vue';
 import _moduleList from '../constant/staticInfo.js';
+import { moduleTitleImgs } from '../constant/imgUrls'
 
-// import { vResize } from '../directives/VResize'
-
-import { ElMessage } from 'element-plus'
-import { Setting, Download, Delete, Top, Bottom, Picture, FullScreen } from '@element-plus/icons-vue'
+import { getTwoDimArray } from '../utils/getTwoDimArray'
+import '../style/index.css'
 
 const captureElement = ref(null);
 const previewElement = ref(null);
@@ -258,7 +253,7 @@ const drawerInfo = reactive({
   bgColor: '#255ca0b8',
   templateType: '0',
   moduleTitleSize: 18,
-  moduleTextSize: 15,
+  moduleTextSize: 14.5,
   headerText: '- PERSONAL RESUME -',
   showHeaderText: true
 })
@@ -271,15 +266,12 @@ const themeMap = {
   2: BlueGrayTitle,
 }
 
-watchEffect(() => {
-  console.log(showUploader.value, 'show')
-})
-
 const previewTop = ref('80px'); // 预览区域距离顶部的距离
 
-const handleCreateMagicBox = () => {
-  magicBoxNum.value++;
-}
+// const handleCreateMagicBox = () => {
+//   magicBoxNum.value++;
+// }
+
 const handleShowUploader = () => {
   showUploader.value = true;
 }
@@ -300,12 +292,8 @@ const _formFields = computed(() => {
   const formFieldsWithoutName = formFields.filter(item => item.label !== '姓名')
 
   // 在渲染基础信息表单时，如果是模板类型1，姓名字段会单独加粗放大显示在顶部，无需在表单中显示
-  const curFormFields = drawerInfo.templateType.value === '0' ? formFieldsWithoutName : formFields
-
-  const rows = curFormFields.length
-  // 将formFields转换为二维数组，每个子数组包含2个元素
-  const _newList = Array.from({ length: rows }, (_, i) => curFormFields.slice(i * (2), (i + 1) * (2)))
-  return _newList
+  const curFormFields = drawerInfo.templateType === '0' ? formFieldsWithoutName : formFields
+  return getTwoDimArray(2, curFormFields)
 })
 
 const name = computed(() => {
@@ -313,7 +301,6 @@ const name = computed(() => {
 })
 
 watchEffect(() => {
-  console.log(previewBottom.value, window.innerHeight)
   if (!previewElement.value) console.log('previewElement is null')
   else if (previewElement.value && previewBottom.value > window.innerHeight) {
     console.log(previewBottom.value, window.innerHeight)
@@ -422,6 +409,23 @@ const capture = () => {
   }
   console.log('captureElement is null')
 };
+
+// const printpage = () => {
+//   const printContent = document.querySelector('#previewElement').innerHTML;
+//   const iframe = document.createElement('iframe');
+//   iframe.setAttribute('style', 'position: absolute; width: 0; height: 0;'); document.body.appendChild(iframe);
+//   const iframeDoc = iframe.contentWindow.document;
+//   // 设置打印展示方式 - 横向展示
+//   iframeDoc.write('<style media="print">@page {size: landscape;}</style>');
+//   // 向 iframe 中注入 printContent 样式
+//   iframeDoc.write(`<link href="../style/preview.css" media="print" rel="stylesheet" />`);
+//   // 写入内容
+//   iframeDoc.write('<div>' + printContent + '</div>');
+//   setTimeout(function () {
+//     iframe.contentWindow.print();
+//     document.body.removeChild(iframe);
+//   }, 50);
+// }
 </script>
 
 <style>
@@ -433,13 +437,13 @@ const capture = () => {
 
 .form-area {
   width: 50%;
-  margin-left: 150px;
+  margin-left: 3%;
 }
 
 .display-area {
-  left: 50%;
+  left: 60%;
   position: fixed;
-  width: 35%;
+  width: 600px;
 }
 
 .field {
@@ -491,17 +495,6 @@ const capture = () => {
   width: 500px;
   border-radius: 15px;
   border: 1px dashed #ced7dd;
-}
-
-.bullet {
-  display: inline-block;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background-color: rgb(66, 66, 66);
-  margin-right: 5px;
-  /* 调整圆点与文本之间的距离 */
-  vertical-align: middle;
 }
 
 .desc-view {
