@@ -118,7 +118,8 @@ const handleChange = (
   border-radius: 6px;
   position: absolute;
   /* transform: translate(-50%, -50%); */
-  left: 85%;
+  right: 5%;
+  top: 5%
   /* top: 55% */
 }
 

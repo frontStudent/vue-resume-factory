@@ -17,10 +17,10 @@ watchEffect(() => {
 
 <style scoped>
 .title {
-    padding: 0px 10px;
+    padding: 0px 6px;
     font-weight: bold;
     color: v-bind(themeColor);
-    width: 130px;
+    width: 110px;
     height: 0;
     border-bottom: v-bind(borderParam) solid v-bind(bgColor);
     /* 调整这个值来控制直角梯形的高度 */

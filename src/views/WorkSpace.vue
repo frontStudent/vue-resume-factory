@@ -6,10 +6,10 @@
           size='large' type='primary' icon='MoreFilled' :timestamp="timestamp">
           <el-form label-width="80px" v-if="id === 0">
             <div v-for="(field, index) in formFields" :key="index" class="field">
-              <el-form-item label="字段名">
+              <el-form-item label="字段名" style="width: 220px">
                 <el-input v-model="field.label" placeholder="字段名"></el-input>
               </el-form-item>
-              <el-form-item label="字段值">
+              <el-form-item label="字段值" style="width: 220px">
                 <el-input v-model="field.value" placeholder="字段值"></el-input>
               </el-form-item>
               <el-button @click="removeField(index)" style="margin-left: 20px;"><el-icon>
@@ -73,12 +73,14 @@
       :style="{ fontSize: drawerInfo.moduleTextSize + 'px', top: previewTop }">
       <div class="preview">
         <div ref="captureElement" style="position: relative;">
+          <ImgCropper :showUploader="showUploader" />
           <MagicBox v-for="index in magicBoxNum" :key="index" value="111"></MagicBox>
           <div class="resume-header" v-if="drawerInfo.showHeaderText">{{ drawerInfo.headerText }}</div>
           <div v-for="(_module, index) in moduleList" :key="index" class="module">
             <component :is="themeMap[drawerInfo.titleStyle]" :text="_module.timestamp" :themeColor="drawerInfo.themeColor"
               :bgColor="drawerInfo.bgColor" :fontSize="drawerInfo.moduleTitleSize"
               v-if="!(_module.id === 0 && drawerInfo.templateType === '0')" />
+              
             <div class="base-info-area" v-if="_module.id === 0">
               <el-row v-if="drawerInfo.templateType === '1'">
                 <div style="width: 500px;">
@@ -88,7 +90,7 @@
                     </el-col>
                   </el-row>
                 </div>
-                <ImgCropper :showUploader="showUploader" />
+                <!-- <ImgCropper :showUploader="showUploader" /> -->
               </el-row>
               <div v-if="drawerInfo.templateType === '0'" style="marginBottom: '30px';">
                 <el-row>
@@ -103,7 +105,7 @@
                       </el-col>
                     </el-row>
                   </div>
-                  <ImgCropper :showUploader="showUploader" />
+                 
                 </el-row>
               </div>
             </div>
@@ -253,10 +255,10 @@ const drawerInfo = reactive({
   themeColor: '#FEFFFF',
   bgColor: '#255ca0b8',
   templateType: '0',
-  moduleTitleSize: 18,
-  moduleTextSize: 14.5,
+  moduleTitleSize: 17,
+  moduleTextSize: 13.5,
   headerText: '- PERSONAL RESUME -',
-  showHeaderText: true
+  showHeaderText: false
 })
 
 let moduleList = reactive(_moduleList);
@@ -307,7 +309,7 @@ watchEffect(() => {
   else if (previewElement.value && previewBottom.value > window.innerHeight) {
     console.log(previewBottom.value, window.innerHeight)
     ElMessage({
-      message: '可能无法完整保存为一页，请调整字号或缩减篇幅',
+      message: '请缩放浏览器确保简历预览区域完全在窗口内',
       type: 'warning',
     })
   }
@@ -412,22 +414,7 @@ const capture = () => {
   console.log('captureElement is null')
 };
 
-// const printpage = () => {
-//   const printContent = document.querySelector('#previewElement').innerHTML;
-//   const iframe = document.createElement('iframe');
-//   iframe.setAttribute('style', 'position: absolute; width: 0; height: 0;'); document.body.appendChild(iframe);
-//   const iframeDoc = iframe.contentWindow.document;
-//   // 设置打印展示方式 - 横向展示
-//   iframeDoc.write('<style media="print">@page {size: landscape;}</style>');
-//   // 向 iframe 中注入 printContent 样式
-//   iframeDoc.write(`<link href="../style/preview.css" media="print" rel="stylesheet" />`);
-//   // 写入内容
-//   iframeDoc.write('<div>' + printContent + '</div>');
-//   setTimeout(function () {
-//     iframe.contentWindow.print();
-//     document.body.removeChild(iframe);
-//   }, 50);
-// }
+
 </script>
 
 <style>
@@ -443,7 +430,7 @@ const capture = () => {
 }
 
 .display-area {
-  left: 60%;
+  right: 2%;
   position: fixed;
   width: 600px;
 }
@@ -466,7 +453,7 @@ const capture = () => {
 .time-sec-view {
   display: flex;
   justify-content: space-between;
-  margin: 10px 0;
+  margin: 5px 0;
 }
 
 .time-sec-view>div {
@@ -500,13 +487,13 @@ const capture = () => {
 }
 
 .desc-view {
-  margin: 3px 0;
+  margin: 1px 0;
 }
 
 .op-but {
-  right: 20px;
+  right: 10px;
   position: fixed;
-  padding: 25px 20px;
+  padding: 25px 10px;
   height: 180px;
   border-radius: 50px;
   display: flex;
