@@ -72,31 +72,31 @@
     <div class="display-area" ref="previewElement" id="previewElement"
       :style="{ fontSize: drawerInfo.moduleTextSize + 'px', top: previewTop }">
       <div class="preview">
-        <div ref="captureElement" style="position: relative;">
+        <div ref="captureElement" style="position: relative">
           <ImgCropper :showUploader="showUploader" />
-          <MagicBox v-for="index in magicBoxNum" :key="index" value="111"></MagicBox>
           <div class="resume-header" v-if="drawerInfo.showHeaderText">{{ drawerInfo.headerText }}</div>
+          <!-- <MagicBox :style="{ fontSize: '15px' }" :value="drawerInfo.headerText"></MagicBox> -->
           <div v-for="(_module, index) in moduleList" :key="index" class="module">
             <component :is="themeMap[drawerInfo.titleStyle]" :text="_module.timestamp" :themeColor="drawerInfo.themeColor"
               :bgColor="drawerInfo.bgColor" :fontSize="drawerInfo.moduleTitleSize"
               v-if="!(_module.id === 0 && drawerInfo.templateType === '0')" />
-              
+
+            <!-- 基础信息模块 -->
             <div class="base-info-area" v-if="_module.id === 0">
               <el-row v-if="drawerInfo.templateType === '1'">
-                <div style="width: 500px;">
+                <div style="width: 400px">
                   <el-row v-for="(row, index) in _formFields" :key="index" :gutter="40">
                     <el-col v-for="({ label, value }) in row" :key="label" :span="10">
                       {{ label }}: {{ value }}
                     </el-col>
                   </el-row>
                 </div>
-                <!-- <ImgCropper :showUploader="showUploader" /> -->
               </el-row>
               <div v-if="drawerInfo.templateType === '0'" style="marginBottom: '30px';">
                 <el-row>
-                  <div style="width: 500px;">
+                  <div style="width: 400px">
                     <div
-                      :style="{ fontWeight: 750, marginBottom: '5px', fontSize: drawerInfo.moduleTitleSize + 5 + 'px' }">
+                      :style="{fontWeight: 750, marginBottom: '2px', fontSize: drawerInfo.moduleTitleSize + 5 + 'px' }">
                       {{ name }}
                     </div>
                     <el-row v-for="(row, index) in _formFields" :key="index" :gutter="40">
@@ -105,10 +105,11 @@
                       </el-col>
                     </el-row>
                   </div>
-                 
                 </el-row>
               </div>
             </div>
+
+            <!-- 其他模块渲染 -->
             <div v-else>
               <div v-for="({ type, dateRange, info1, info2, desc }, index) in _module.detail" :key="index">
                 <div v-if="type === 'time'" class="time-sec-view">
@@ -120,6 +121,9 @@
                 <div v-if="type === 'desc'" class="desc-view">
                   {{ desc }}
                 </div>
+                <!-- <MagicBox v-if="type === 'desc'" :resizable="false"
+                  :style="{ fontSize: drawerInfo.moduleTextSize + 'px' }">{{
+                    desc }}</MagicBox> -->
               </div>
             </div>
           </div>
@@ -226,7 +230,6 @@ import '../style/index.css'
 const captureElement = ref(null);
 const previewElement = ref(null);
 
-const previewBottom = ref(0);
 const curModuleIndex = ref(0);
 
 const showUploader = ref(false);
@@ -304,31 +307,12 @@ const name = computed(() => {
   return formFields.find(item => item.label === '姓名')?.value || '你的姓名'
 })
 
-watchEffect(() => {
-  if (!previewElement.value) console.log('previewElement is null')
-  else if (previewElement.value && previewBottom.value > window.innerHeight) {
-    console.log(previewBottom.value, window.innerHeight)
-    ElMessage({
-      message: '请缩放浏览器确保简历预览区域完全在窗口内',
-      type: 'warning',
-    })
-  }
-})
-
-const updatePreViewBottom = () => {
-  if (previewElement.value) previewBottom.value = previewElement.value.getBoundingClientRect().bottom
-  else {
-    console.log('previewElement is null')
-  }
-}
 // 基础信息增删操作
 const addField = () => {
   formFields.push({ label: '', value: '' });
-  updatePreViewBottom()
 };
 const removeField = (index) => {
   formFields.splice(index, 1);
-  updatePreViewBottom()
 };
 
 // 时间段/文字描述增删操作
@@ -336,16 +320,13 @@ const addSec = (moduleId, type) => {
   let mod = moduleList.find(m => m.id === moduleId)
   if (type === 0) {
     mod.detail = [...mod.detail, { dateRange: [dayjs(), dayjs()], info1: '华中科技大学', info2: '计算机科学与技术', type: 'time' }]
-    updatePreViewBottom()
     return
   }
   mod.detail = [...mod.detail, { desc: '请描述你的经历/技能！', type: 'desc' }];
-  updatePreViewBottom()
 }
 const removeSec = (moduleId, index) => {
   let mod = moduleList.find(m => m.id === moduleId)
   mod.detail.splice(index, 1);
-  updatePreViewBottom()
 }
 
 // 模块增删操作
@@ -364,12 +345,10 @@ const submitModule = () => {
     moduleList[curModuleIndex.value].timestamp = dialogInfo.name;
   }
   dialogInfo.name = '';
-  updatePreViewBottom()
 }
 
 const removeModule = (index) => {
   moduleList.splice(index, 1);
-  updatePreViewBottom()
 }
 
 const editModule = (index) => {
@@ -425,13 +404,34 @@ const capture = () => {
 }
 
 .form-area {
-  width: 50%;
-  margin-left: 3%;
+  width: 45%;
+  margin-left: 1%;
+  padding: 10px;
+  height: 100vh;
+  overflow: scroll;
+
+  /* For Webkit browsers (Chrome, Safari) */
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 6px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 6px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }
 }
 
 .display-area {
-  right: 2%;
-  position: fixed;
+  margin-left: 20px;
   width: 600px;
 }
 
@@ -487,7 +487,7 @@ const capture = () => {
 }
 
 .desc-view {
-  margin: 1px 0;
+  margin: 2px 0;
 }
 
 .op-but {

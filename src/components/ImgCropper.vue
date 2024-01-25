@@ -1,10 +1,10 @@
 <template>
-    <!-- 若图片只设置宽度，可以保持等比例展示图片 -->
-    <el-image v-if="imgUrl !== ''" :src="imgUrl" v-resize class="avatar-uploader"/>
-    <!-- <el-image v-if="imgUrl !== ''" :src="imgUrl" style="width: 100%;" :preview-src-list="[imgUrl]" /> -->
-    <el-icon v-else class="avatar-uploader-icon" @click="dialogVisible = true">
-      <Plus />
-    </el-icon>
+  <!-- 若图片只设置宽度，可以保持等比例展示图片 -->
+  <el-image v-if="imgUrl !== ''" :src="imgUrl" class="avatar-uploader" v-draggable v-resizable />
+  <!-- <el-image v-if="imgUrl !== ''" :src="imgUrl" style="width: 100%;" :preview-src-list="[imgUrl]" /> -->
+  <el-icon v-else class="avatar-uploader-icon" @click="dialogVisible = true">
+    <Plus />
+  </el-icon>
   <el-dialog v-model="dialogVisible" draggable title="裁剪头像" align-center>
     <div style="width: 600px; height: 400px;">
       <vueCropper style="width: 100%; height: 100%;" ref="cropper" :img="option.img" :outputSize="option.outputSize"
@@ -41,7 +41,9 @@ import { VueCropper } from "vue-cropper";
 import { ref, reactive, watchEffect } from 'vue';
 import { Plus } from '@element-plus/icons-vue'
 
-import { vResize } from '../directives/VResize'
+import { vDraggable } from '../directives/VDraggable'
+import { vResizable } from '../directives/VResizable'
+
 const props = defineProps({ showUploader: Boolean })
 
 const dialogVisible = ref(false)
@@ -116,11 +118,11 @@ const handleChange = (
   width: 80px;
   height: 120px;
   border-radius: 6px;
-  position: absolute;
   /* transform: translate(-50%, -50%); */
-  right: 5%;
-  top: 5%
   /* top: 55% */
+  position: absolute;
+  left: 410px;
+  z-index: 100;
 }
 
 .el-icon.avatar-uploader-icon {
@@ -131,10 +133,10 @@ const handleChange = (
   font-size: 28px;
   cursor: pointer;
   color: #8c939d;
-  position: absolute;
   text-align: center;
-  right: 5%;
-  top: 5%
+  position: absolute;
+  left: 410px;
+  z-index: 100;
 }
 </style>
   

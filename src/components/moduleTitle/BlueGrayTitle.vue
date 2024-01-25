@@ -1,6 +1,6 @@
 <template>
     <!-- 蓝色字体 - 灰色长条背景 -->
-    <div class="title" >
+    <div class="title">
       <div class="pre"></div>
       <div class="pre"></div>
         <div class="text" :style="{ fontSize: fontSize + 'px' }">{{ props.text }}</div>
