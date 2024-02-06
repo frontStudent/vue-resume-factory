@@ -9,6 +9,7 @@ const urlMap = {
   '0': '/home',
   '1': '/workspace',
   '2': '/guide',
+  '4': '/freeBoard'
 }
 const handleSelect = (key) => {
   if(key === '3') window.open('https://github.com/frontStudent/vue-resume-factory')
@@ -25,6 +26,9 @@ const handleSelect = (key) => {
     <el-menu-item index="1"><el-icon>
         <Edit />
       </el-icon>工作区</el-menu-item>
+      <el-menu-item index="4"><el-icon>
+        <Edit />
+      </el-icon>Free画板</el-menu-item>
     <el-menu-item index="2"><el-icon>
         <Odometer />
       </el-icon>使用指南</el-menu-item>
